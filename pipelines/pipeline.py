@@ -16,6 +16,4 @@ def test_pipeline(data_path:str, config_path:str):
         config_path: str to config.yaml file
     '''
     df = ingest_data(data_path)
-    [validated_df, valid] = validate_data(df, config_path)
-    if valid:
-        logger.info('pipeline finished :)')
+    valid = validate_data(df, config_path)

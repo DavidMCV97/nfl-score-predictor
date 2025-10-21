@@ -3,9 +3,25 @@ data_validation:
   required_columns:
     - season
     - game_type
+    - gametime
+    - away_team
+    - away_score
+    - home_team
+    - home_score
+    - location
+  max_null_percentage: 0.95
   numeric_ranges:
     season:
       min: 1900
       max: 2100
+    away_score:
+      min: 0
+      max: 100
+    home_score:
+      min: 0
+      max: 100
   categorical_values:
     game_type: ['REG','WC','DIV','CON','SB']
+    away_team: ['ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB','HOU','IND','JAX','KC','LA','LAC','LV','MIA','MIN','NE','NO','NYG','NYJ','OAK','PHI','PIT','SD','SEA','SF','STL','TB','TEN','WAS']
+    home_team: ['ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET','GB','HOU','IND','JAX','KC','LA','LAC','LV','MIA','MIN','NE','NO','NYG','NYJ','OAK','PHI','PIT','SD','SEA','SF','STL','TB','TEN','WAS']
+    location: ['Home','Neutral']
