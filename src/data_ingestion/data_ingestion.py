@@ -14,8 +14,14 @@ def load_csv(file_path: str) -> pd.DataFrame:
     """
     try:
         data = pd.read_csv(file_path)
-        logger.info('data ingested', extra={'path':file_path})
+        logger.info(f'Data ingested successfully from {file_path}. Shape: {data.shape}')
         return data
+    except FileNotFoundError:
+        logger.error(f"File not found: {file_path}")
+        raise
+    except pd.errors.EmptyDataError:
+        logger.error(f"Empty CSV file: {file_path}")
+        raise
     except Exception as e:
-        print(f"Error reading the data from {file_path}: {e}")
+        logger.error(f"Error reading data from {file_path}: {str(e)}")
         raise

@@ -6,9 +6,21 @@ project_root = str(Path(__file__).resolve().parents[1])
 if project_root not in sys.path:
     sys.path.append(project_root)
 
+'''
 from src.data_ingestion.data_ingestion import load_csv
 from src.logger import setup_logging
 
 setup_logging()
 
 df = load_csv("datasets/games.csv")
+'''
+
+from steps.ingest_data import ingest_data
+from zenml import pipeline
+
+@pipeline
+def test_pipeline():
+    ingest_data('datasets/games.csv')
+
+if __name__ == '__main__':
+    test_pipeline()

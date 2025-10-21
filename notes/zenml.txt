@@ -1,0 +1,7 @@
+zenml notes:
+
+- to locate thee repository in the project, use 'zenml init'
+- projects are for paid users only, so lets keep all in the default project
+- to open the UI, use 'zenml up --blocking'
+    - be careful, sometimes the UI shows other servers. you can see available servers with 'zenml server list'
+    - close with ctrl+c, check closed with 'zenml status'

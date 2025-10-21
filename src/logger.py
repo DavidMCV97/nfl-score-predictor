@@ -33,6 +33,7 @@ def setup_logging(log_to_file: bool=False):
     # console handler
     console = logging.StreamHandler()
     console.setFormatter(formatter)
+    console.setLevel(LEVEL)
     root_logger.addHandler(console)
 
     # file handler
@@ -53,6 +54,7 @@ def setup_logging(log_to_file: bool=False):
         # file handler
         file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
         file_handler.setFormatter(formatter)
+        file_handler.setLevel(LEVEL)
         root_logger.addHandler(file_handler)
     
     return root_logger

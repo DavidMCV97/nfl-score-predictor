@@ -1,0 +1,11 @@
+# data validation config
+data_validation:
+  required_columns:
+    - season
+    - game_type
+  numeric_ranges:
+    season:
+      min: 1900
+      max: 2100
+  categorical_values:
+    game_type: ['REG','WC','DIV','CON','SB']
