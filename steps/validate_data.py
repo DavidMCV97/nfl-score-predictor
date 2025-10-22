@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 @step
 def validate_data(df:pd.DataFrame, config_path:str) -> bool:
     '''
-    Validation of data with config values.
+    Function to validate raw data with config values.
     Args:
         df: pd.DataFrame with the ingested data
         config_path: path to the config file
