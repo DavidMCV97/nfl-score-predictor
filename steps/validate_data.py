@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @step
-def validate_data(df:pd.DataFrame, config_path:str) -> bool:
+def validate_data(df:pd.DataFrame, config_path:str) -> Tuple[bool, pd.DataFrame]:
     '''
     Function to validate raw data with config values.
     Args:
@@ -18,6 +18,7 @@ def validate_data(df:pd.DataFrame, config_path:str) -> bool:
         config_path: path to the config file
     Returns:
         bool (is_valid)
+        pd.DataFrame (the same input df)
     '''
     try:
         # get config
@@ -65,7 +66,7 @@ def validate_data(df:pd.DataFrame, config_path:str) -> bool:
         # check if passed all tests
         is_valid = len(errors)==0
 
-        return is_valid
+        return is_valid, df
     
     except FileNotFoundError as e:
         logger.error(f"❌ Can't find config.yaml file: {e}")
