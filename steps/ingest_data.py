@@ -1,5 +1,4 @@
 from src.data_ingestion.data_ingestion import load_csv
-from src.logger import setup_logging
 from zenml import step
 import pandas as pd
 import logging
