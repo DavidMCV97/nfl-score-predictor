@@ -76,7 +76,7 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
             team_df = df_list.append(team_df)
 
         # concat all dataframes
-        focused_df = pd.concat(df_list).reset_index(drop=True)
+        focused_df = pd.concat(df_list, ignore_index=True)
 
         # get versus team last ten games wins by merging df with itself
         focused_df = pd.merge(
@@ -116,6 +116,9 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
             labels=validation_config['hour_labels']
         )
 
+        # sort by date
+        focused_df = focused_df.sort_values(by=['gameday','gametime']).reset_index(drop=True)
+        
         #notification of step end
         logger.info("Data preprocessing completed.")
 
@@ -133,7 +136,7 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
         raise
 
 @step
-def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tuple(pd.DataFrame, pd.DataFrame):
+def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     '''
     function to do additional preprocessing after the data split.
     Includes encoding categorical variables.
