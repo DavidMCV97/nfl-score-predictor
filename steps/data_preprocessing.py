@@ -4,7 +4,7 @@ import pandas as pd
 import yaml
 import numpy as np
 from typing import Tuple
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -157,15 +157,25 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         # label encoding for focus team status
         staus_encoder = LabelEncoder()
         X_train_proc['focus_team_status_encoded'] = staus_encoder.fit_transform(X_train_proc['focus_team_status'])
+        X_train_proc = X_train_proc.drop(columns=['focus_team_status'])
 
         # label encoding for game type (we dont use sklearn to start with 1)
         mapping = {'REG':1, 'WC':2, 'DIV':3, 'CON':4, 'SB':5}
         X_train_proc['game_type_encoded'] = X_train_proc['game_type'].map(mapping)
+        X_train_proc = X_train_proc.drop(columns=['game_type'])
 
         # label encoding for day period
-        period_encoder = LabelEncoder()
-        period_encoder.fit('Morning','Afternoon','Evening','Night')
-        X_train_proc['day_period_encoded'] = period_encoder.transform(X_train_proc['day_period'])
+        period_encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+        filter = X_train_proc[X_train_proc['day_period'] != 'night'][['day_period']]
+        period_encoder.fit(filter)
+        day_period_encoded = period_encoder.transform(X_train_proc[['day_period']])
+        day_period_df = pd.DataFrame(
+            day_period_encoded,
+            columns = period_encoder.get_feature_names_out(['day_period']),
+            index = X_train_proc.index
+        )
+        X_train_proc = X_train_proc.join(day_period_df)
+        X_train_proc = X_train_proc.drop(columns=['day_period'])
         
         # return the processed dataframes
         return X_train_proc, y_train_proc
