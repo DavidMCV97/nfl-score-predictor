@@ -13,6 +13,7 @@ A comprehensive machine learning operations (MLOps) project for predicting Natio
 - [x] Data ingestion step
 - [x] Data validation step
 - [x] Preprocessing experiments
+- [x] Data splitting step
 - [x] Data preprocessing step
 - [ ] Training experiments
 - [ ] Model Training step
