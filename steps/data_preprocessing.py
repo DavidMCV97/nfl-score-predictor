@@ -3,13 +3,13 @@ from zenml import step
 import pandas as pd
 import yaml
 import numpy as np
-from typing import Tuple
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from typing import Tuple, Annotated
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 
 logger = logging.getLogger(__name__)
 
 @step
-def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.DataFrame:
+def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> Annotated[pd.DataFrame, 'preprocessed_games_data']:
     '''
     function to clean and transform raw data. Includes dropping unnecesary data,
     andjusting datatypes, and feature engineering.
@@ -24,9 +24,6 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
     '''
 
     try:
-        # notification of step start
-        logger.info("Starting data preprocessing...")
-
         # we consider only previous seasons
         games_df = df[df['season'] <= max_year].copy()
 
@@ -118,9 +115,6 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
 
         # sort by date
         focused_df = focused_df.sort_values(by=['gameday','gametime']).reset_index(drop=True)
-        
-        #notification of step end
-        logger.info("Data preprocessing completed.")
 
         # return the processed dataframe
         return focused_df
@@ -136,7 +130,10 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> pd.D
         raise
 
 @step
-def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tuple[
+    Annotated[pd.DataFrame, 'processed_X_train'], 
+    Annotated[pd.DataFrame, 'processed_y_train']
+]:
     '''
     function to do additional preprocessing after the data split.
     Includes encoding categorical variables.
@@ -147,9 +144,6 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         Tuple(pd.DataFrame, pd.DataFrame) (processed X_train and y_train)
     '''
     try:
-        # notification of step start
-        logger.info("Starting post-split data preprocessing...")
-
         # copy of df to avoid modifying original data
         X_train_proc = X_train.copy()
         y_train_proc = y_train.copy()
@@ -177,6 +171,14 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         X_train_proc = X_train_proc.join(day_period_df)
         X_train_proc = X_train_proc.drop(columns=['day_period'])
         
+        # standarization
+        cols = ['focus_team_ltg_wins','focus_team_ltg_score','versus_team_ltg_wins','versus_team_ltg_score']
+        new_cols = ['focus_team_ltg_wins_scaled','focus_team_ltg_score_scaled',
+                    'versus_team_ltg_wins_scaled','versus_team_ltg_score_scaled']
+        scaler = StandardScaler()
+        X_train_proc[new_cols] = scaler.fit_transform(X_train_proc[cols])
+        X_train_proc = X_train_proc.drop(columns=cols)
+
         # return the processed dataframes
         return X_train_proc, y_train_proc
 

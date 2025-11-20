@@ -1,7 +1,7 @@
 import logging
 from zenml import step
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, Annotated
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 @step
-def validate_data(df:pd.DataFrame, config_path:str) -> Tuple[bool, pd.DataFrame]:
+def validate_data(df:pd.DataFrame, config_path:str) -> Tuple[
+    Annotated[bool, 'is_valid'],
+    Annotated[pd.DataFrame, 'validated_games_data']
+]:
     '''
     Function to validate raw data with config values.
     Args:

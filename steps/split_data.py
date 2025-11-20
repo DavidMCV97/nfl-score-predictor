@@ -1,7 +1,7 @@
 import logging
 from zenml import step
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, Annotated
 
 logger = logging.getLogger(__name__)
 
@@ -10,10 +10,10 @@ def split_data(
     df: pd.DataFrame, 
     cutoff_year: int
 ) -> Tuple[
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.Series,
-    pd.Series
+    Annotated[pd.DataFrame, 'X_train'],
+    Annotated[pd.DataFrame, 'X_test'],
+    Annotated[pd.Series, 'y_train'],
+    Annotated[pd.Series, 'y_test']
 ]:
     '''
     Splitting data into train and test sets
@@ -25,14 +25,14 @@ def split_data(
         pd.Dataframe (test df)
     '''
     try:
-        # notification of step start
-        logger.info("Starting data splitting...")
-
         # season info
         season = df['season']
 
         # drop unnecessary columns + target
-        X = df[['focus_team_status','game_type','focus_team_ltg_wins','focus_team_ltg_score','day_period']]
+        X = df[['focus_team_status','game_type',
+                'focus_team_ltg_wins','focus_team_ltg_score',
+                'versus_team_ltg_wins','versus_team_ltg_score',
+                'day_period']]
 
         # target variable
         y = df['winner']

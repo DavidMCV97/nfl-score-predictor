@@ -18,7 +18,7 @@ def test_pipeline(data_path:str, config_path:str, max_year:int, cutoff_year:int)
     df = ingest_data(data_path)
     valid, validated_df = validate_data(df, config_path)
     if valid:
-        processed_df = data_preprocessing(validated_df, max_year=2024, config_path=config_path)
+        processed_df = data_preprocessing(validated_df, max_year, config_path=config_path)
         X_train, X_test, y_train, y_test = split_data(processed_df, cutoff_year)
         X_train_processed, y_train_processed = post_split_preprocessing(X_train, y_train)
     else:
