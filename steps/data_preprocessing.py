@@ -132,7 +132,10 @@ def data_preprocessing(df: pd.DataFrame, max_year:int, config_path: str) -> Anno
 @step
 def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tuple[
     Annotated[pd.DataFrame, 'processed_X_train'], 
-    Annotated[pd.DataFrame, 'processed_y_train']
+    Annotated[pd.DataFrame, 'processed_y_train'],
+    Annotated[LabelEncoder, 'team_status_encoder'],
+    Annotated[OneHotEncoder, 'day_period_encoder'],
+    Annotated[StandardScaler, 'Scaler_for_game_outcomes']
 ]:
     '''
     function to do additional preprocessing after the data split.
@@ -141,7 +144,7 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         X_train: pd.DataFrame with training features
         y_train: pd.DataFrame with training target
     Returns:
-        Tuple(pd.DataFrame, pd.DataFrame) (processed X_train and y_train)
+        pd.DataFrame, pd.DataFrame, LabelEncoder
     '''
     try:
         # copy of df to avoid modifying original data
@@ -149,8 +152,8 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         y_train_proc = y_train.copy()
 
         # label encoding for focus team status
-        staus_encoder = LabelEncoder()
-        X_train_proc['focus_team_status_encoded'] = staus_encoder.fit_transform(X_train_proc['focus_team_status'])
+        status_encoder = LabelEncoder()
+        X_train_proc['focus_team_status_encoded'] = status_encoder.fit_transform(X_train_proc['focus_team_status'])
         X_train_proc = X_train_proc.drop(columns=['focus_team_status'])
 
         # label encoding for game type (we dont use sklearn to start with 1)
@@ -180,7 +183,7 @@ def post_split_preprocessing(X_train: pd.DataFrame, y_train: pd.DataFrame) -> Tu
         X_train_proc = X_train_proc.drop(columns=cols)
 
         # return the processed dataframes
-        return X_train_proc, y_train_proc
+        return X_train_proc, y_train_proc, status_encoder, period_encoder, scaler
 
     except Exception as e:
         logger.error(f"❌ Unexpected error at post-split preprocessing step: {e}")
